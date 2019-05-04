@@ -1,5 +1,4 @@
 import requests
-from credentials import main_user
 from url_helper import *
 from exceptions import *
 from profile import Profile
@@ -59,9 +58,3 @@ def login(session, user):
         raise CredentialsError('uncorrect credentials')
     else:
         return Profile(session)
-
-
-if __name__ == '__main__':
-    main_session = requests.session()
-
-    print(login(main_session, main_user).text)
