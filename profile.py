@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from url_helper import *
 from exceptions import *
+from datetime import datetime, timedelta
 from diary import *
 
 
@@ -126,6 +127,13 @@ class Profile:
     @check_login
     def diary_day(self, date=datetime.today().strftime('%d.%m.%Y')):
         return DiaryDay(self.session, date)
+
+
+    def diary_week(self, delta=0):
+        date_text = datetime.today().strftime('%d.%m.%Y')
+        date = datetime.strptime(date_text, '%d.%m.%Y') + timedelta(days=7 * delta)
+        dates = [date + timedelta(days=i) for i in range(0 - date.weekday(), 7 - date.weekday())]
+        return [self.diary_day(i.strftime('%d.%m.%Y')) for i in dates]
 
     
     def save_grades(self, diary=None):
