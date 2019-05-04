@@ -1,8 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
-from url_helper import *
-from exceptions import *
 from datetime import datetime
+try:
+    from url_helper import *
+    from exceptions import *
+except ModuleNotFoundError:
+    from edu_parser.url_helper import *
+    from edu_parser.exceptions import *
 
 
 def get_timestamp(date):

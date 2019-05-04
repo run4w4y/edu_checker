@@ -1,9 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
-from url_helper import *
-from exceptions import *
 from datetime import datetime, timedelta
-from diary import *
+try:
+    from url_helper import *
+    from exceptions import *
+    from diary import *
+except ModuleNotFoundError:
+    from edu_parser.url_helper import *
+    from edu_parser.exceptions import *
+    from edu_parser.diary import *
 
 
 def check_login(f):
