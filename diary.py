@@ -21,6 +21,7 @@ class DiaryGrade:
     def __repr__(self):
         return '({}, {})'.format(self.grade, self.comment)
 
+
     def __str__(self):
         return __repr__()
 
@@ -71,7 +72,7 @@ class DiarySubject:
 
 
 class DiaryDay:
-    def __init__(self, session, date=datetime.today().strftime('%d.%m.%Y')):
+    def __init__(self, session, date):
         self.date = datetime.strptime(date, '%d.%m.%Y')
         self.date_str = date
         self.weekday = self.date.weekday()
@@ -143,7 +144,7 @@ class TermSubject:
 
 
 class DiaryTerm:
-    def __init__(self, session, term=''):
+    def __init__(self, session, term):
         self.term_number = term
         response = session.get(term_url + term)
 
