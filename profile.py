@@ -75,6 +75,7 @@ class Profile:
     def __init__(self, user):
         self.session = requests.session()
         self.credentials = user
+        self.grades_cache = {}
 
         response = self.session.get(index_url)
         if 'Войти через ЕСИА' in response.text:
@@ -125,6 +126,24 @@ class Profile:
     @check_login
     def diary_day(self, date=datetime.today().strftime('%d.%m.%Y')):
         return DiaryDay(self.session, date)
+
+    
+    def save_grades(self, diary=None):
+        if diary is None:
+            diary = self.diary_term()
+        for name, subject in diary.subjects.items():
+            self.grades_cache[name] = subject.grades
+
+
+    def check_grades(self):
+        diary = self.diary_term()
+        new_grades = {}
+        for name, subject in diary.subjects.items():
+            if len(subject.grades) > len(self.grades_cache[name]):
+                new_grades[name] = subject.grades[len(self.grades_cache[name]):]
+        
+        self.save_grades(diary)
+        return new_grades
 
 
     def __repr__(self):

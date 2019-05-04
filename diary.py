@@ -139,8 +139,8 @@ class TermSubject:
         return __repr__()
 
 
-    def predict(self, grade):
-        pass
+    def predict(self, new_grades):
+        return (sum(self.grades) + sum(new_grades))/(len(self.grades) + len(new_grades))
 
 
 class DiaryTerm:
@@ -155,13 +155,18 @@ class DiaryTerm:
         main_table = html.find('table', attrs={'class': 'term-marks'})
         rows = main_table.find_all('tr')
         grades_count = int(rows[0].find_all('td')[1]['colspan'])
-        self.subjects = []
+        self.subjects = {}
 
         for row in rows[1:-1]:
             cols = row.find_all('td')
-            self.subjects.append(TermSubject(
+            subject = TermSubject(
                 [col for col in cols], grades_count
-            ))
+            )
+            self.subjects[subject.name] = subject
+
+    
+    def get_subject(self, name):
+        return self.subjects.get(name)
 
 
     def __repr__(self):
