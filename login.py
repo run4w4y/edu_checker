@@ -3,6 +3,7 @@ from url_helper import *
 from exceptions import *
 from profile import Profile
 
+
 def login(session, user):
     if user.get('main_password') is None:
         raise CredentialsError('main_pass field is not found')

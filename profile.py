@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from url_helper import *
 from exceptions import *
 
+
 class Profile:
     def parse_raw(self):
         self.data = {}
@@ -59,5 +60,9 @@ class Profile:
         self.parse_raw()
 
 
-    def to_str(self):
+    def __repr__(self):
+        return 'instance of Profile class with login {}'.format(self.login)
+
+
+    def __str__(self):
         return str(self.data)
