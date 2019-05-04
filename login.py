@@ -2,6 +2,7 @@ import requests
 from credentials import main_user
 from url_helper import *
 from exceptions import *
+from profile import Profile
 
 def login(session, user):
     if user.get('main_password') is None:
@@ -52,7 +53,12 @@ def login(session, user):
     session.get(login_process_url, headers=headers)
 
     # finally get the needed data
-    return session.get(index_url, headers=headers)
+    response = session.get(index_url, headers=headers)
+
+    if 'Неверный логин или пароль' in response.text:
+        raise CredentialsError('uncorrect credentials')
+    else:
+        return Profile(session)
 
 
 if __name__ == '__main__':
