@@ -1,2 +1,2 @@
-# edu_checker
-checker for edu.tatar.ru
+# edu_parser
+parser for edu.tatar.ru
