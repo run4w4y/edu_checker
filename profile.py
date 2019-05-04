@@ -134,7 +134,7 @@ class Profile:
         date_text = datetime.today().strftime('%d.%m.%Y')
         date = datetime.strptime(date_text, '%d.%m.%Y') + timedelta(days=7 * delta)
         dates = [date + timedelta(days=i) for i in range(0 - date.weekday(), 7 - date.weekday())]
-        return [self.diary_day(i.strftime('%d.%m.%Y'), ) for i in dates]
+        return [self.diary_day(i.strftime('%d.%m.%Y'), ) for i in dates[:-1]]
 
     
     def save_grades(self, diary=None):
