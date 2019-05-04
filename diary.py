@@ -72,11 +72,11 @@ class DiarySubject:
 
 
 class DiaryDay:
-    def __init__(self, session, date):
+    def __init__(self, session, date, proxy):
         self.date = datetime.strptime(date, '%d.%m.%Y')
         self.date_str = date
         self.weekday = self.date.weekday()
-        response = session.get(diary_day_url + str(get_timestamp(self.date)))
+        response = session.get(diary_day_url + str(get_timestamp(self.date)), proxies=proxy)
 
         if 'не найден' in response.text:
             raise LoginError('it appears that you are not logged in')
@@ -144,9 +144,9 @@ class TermSubject:
 
 
 class DiaryTerm:
-    def __init__(self, session, term):
+    def __init__(self, session, term, proxy):
         self.term_number = term
-        response = session.get(term_url + term)
+        response = session.get(term_url + term, proxies=proxy)
 
         if 'не найден' in response.text:
             raise LoginError('it appears that you are not logged in')

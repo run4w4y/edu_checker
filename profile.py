@@ -34,7 +34,7 @@ class Profile:
             'Connection': 'close',
             'Upgrade-Insecure-Requests': '1'
         }
-        self.session.get(login_url, headers=headers)
+        self.session.get(login_url, headers=headers, proxies=self.proxy)
 
         # post login request
         headers = {
@@ -50,7 +50,7 @@ class Profile:
             'Cookie': '_ga=GA1.2.1346337607.1556912647; _gid=GA1.2.404413009.1556912647; DNSID=0ac427a828f028ff97208a1dbd362fefbeb1fa06; __utma=146055648.1346337607.1556912647.1556913170.1556913170.1; __utmb=146055648.2.10.1556913170; __utmc=146055648; __utmz=146055648.1556913170.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt=1',
             'Upgrade-Insecure-Requests': '1'
         }
-        self.session.post(login_url, data=self.credentials, headers=headers)
+        self.session.post(login_url, data=self.credentials, headers=headers, proxies=self.proxy)
 
         # get request after login
         headers = {
@@ -64,7 +64,7 @@ class Profile:
             'Cookie': '_ga=GA1.2.1346337607.1556912647; _gid=GA1.2.404413009.1556912647; DNSID=0ac427a828f028ff97208a1dbd362fefbeb1fa06; __utma=146055648.1346337607.1556912647.1556913170.1556913170.1; __utmb=146055648.2.10.1556913170; __utmc=146055648; __utmz=146055648.1556913170.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt=1',
             'Upgrade-Insecure-Requests': '1'
         }
-        self.session.get(login_process_url, headers=headers)
+        self.session.get(login_process_url, headers=headers, proxies=self.proxy)
 
         # finally get the needed data
         response = self.session.get(index_url, headers=headers)
@@ -73,15 +73,16 @@ class Profile:
             raise CredentialsError('uncorrect credentials')
 
 
-    def __init__(self, user):
+    def __init__(self, user, proxy={'https': 'http://89.249.251.21:3128'}):
+        self.proxy = proxy
         self.session = requests.session()
         self.credentials = user
         self.grades_cache = {}
 
-        response = self.session.get(index_url)
+        response = self.session.get(index_url, proxies=self.proxy)
         if 'Войти через ЕСИА' in response.text:
             self.login()
-            response = self.session.get(index_url)
+            response = self.session.get(index_url, proxies=self.proxy)
         
         html = BeautifulSoup(response.text, 'html.parser')
         raw_data = {}
@@ -121,19 +122,19 @@ class Profile:
 
     @check_login
     def diary_term(self, term=''):
-        return DiaryTerm(self.session, term)
+        return DiaryTerm(self.session, term, self.proxy)
 
 
     @check_login
     def diary_day(self, date=datetime.today().strftime('%d.%m.%Y')):
-        return DiaryDay(self.session, date)
+        return DiaryDay(self.session, date, self.proxy)
 
 
     def diary_week(self, delta=0):
         date_text = datetime.today().strftime('%d.%m.%Y')
         date = datetime.strptime(date_text, '%d.%m.%Y') + timedelta(days=7 * delta)
         dates = [date + timedelta(days=i) for i in range(0 - date.weekday(), 7 - date.weekday())]
-        return [self.diary_day(i.strftime('%d.%m.%Y')) for i in dates]
+        return [self.diary_day(i.strftime('%d.%m.%Y'), ) for i in dates]
 
     
     def save_grades(self, diary=None):
