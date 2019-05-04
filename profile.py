@@ -73,7 +73,7 @@ class Profile:
             raise CredentialsError('uncorrect credentials')
 
 
-    def __init__(self, user, proxy={'https': 'http://89.249.251.21:3128'}):
+    def __init__(self, user, proxy={}):
         self.proxy = proxy
         self.session = requests.session()
         self.credentials = user
