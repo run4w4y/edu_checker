@@ -19,11 +19,10 @@ class DiaryGrade:
 
 
     def __repr__(self):
-        return 'grade {} with a comment "{}"'.format(self.grade, self.comment)
-
+        return '({}, {})'.format(self.grade, self.comment)
 
     def __str__(self):
-        return '({}, {})'.format(self.grade, self.comment)
+        return __repr__()
 
 
 class DiarySubject:
@@ -64,12 +63,11 @@ class DiarySubject:
     
 
     def __repr__(self):
-        return 'instance of DiarySubject class with name {}'.format(self.name)
+        return str(self.data)
 
 
     def __str__(self):
-        return str(self.data)
-
+        return __repr__()
 
 
 class DiaryDay:
@@ -102,4 +100,78 @@ class DiaryDay:
 
     
     def __str__(self):
-        return '{}, {}, {}'.format(self.weekday, self.date_str, str(self.subjects))
+        return str(dict([
+            ('weekday', self.weekday),
+            ('date_str', self.date_str),
+            ('subjects', self.subjects)
+        ]))
+        return '"weekday": {}, "date_str": "{}", "subjects": {}'.format(self.weekday, self.date_str, str(self.subjects))
+
+
+class TermSubject:
+    def __init__(self, data, grades_count):
+        self.data = {}
+
+        self.name = data[0].string
+        self.data['name'] = self.name
+
+        self.grades = []
+        raw_grades = data[1:grades_count+1]
+        for raw_grade in raw_grades:
+            grade = raw_grade.string
+            if grade is not None:
+                self.grades.append(int(grade))
+        self.data['grades'] = str(self.grades)
+
+        self.average_grade = float(data[grades_count+1].string)
+        self.data['average_grade'] = self.average_grade
+
+        self.final_grade = data[-1].string
+        self.data['final_grade'] = self.final_grade
+
+    
+    def __repr__(self):
+        return str(self.data)
+
+
+    def __str__(self):
+        return __repr__()
+
+
+    def predict(self, grade):
+        pass
+
+
+class DiaryTerm:
+    def __init__(self, session, term=''):
+        self.term_number = term
+        response = session.get(term_url + term)
+
+        if 'не найден' in response.text:
+            raise LoginError('it appears that you are not logged in')
+
+        html = BeautifulSoup(response.text, 'html.parser')
+        main_table = html.find('table', attrs={'class': 'term-marks'})
+        rows = main_table.find_all('tr')
+        grades_count = int(rows[0].find_all('td')[1]['colspan'])
+        self.subjects = []
+
+        for row in rows[1:-1]:
+            cols = row.find_all('td')
+            self.subjects.append(TermSubject(
+                [col for col in cols], grades_count
+            ))
+
+
+    def __repr__(self):
+        if self.term_number == '':
+            return 'instance of DiaryTerm class for the current term'
+        else:
+            return 'instance of DiaryTerm class for the {} term'.format(self.term_number)
+    
+
+    def __str__(self):
+        return str(dict([
+            ('term_number', self.term_number),
+            ('subjects', self.subjects)
+        ]))
