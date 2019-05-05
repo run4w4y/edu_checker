@@ -79,6 +79,23 @@ class Profile:
         if 'Неверный логин или пароль' in response.text:
             raise CredentialsError('uncorrect credentials')
 
+    
+    def logout(self):
+        headers = {
+            'Host': 'edu.tatar.ru',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Referer': 'https://edu.tatar.ru/',
+            'Connection': 'close',
+            'Cookie': '_ga=GA1.2.1346337607.1556912647; _gid=GA1.2.404413009.1556912647; DNSID=0ac427a828f028ff97208a1dbd362fefbeb1fa06; __utma=146055648.1346337607.1556912647.1556913170.1556913170.1; __utmb=146055648.2.10.1556913170; __utmc=146055648; __utmz=146055648.1556913170.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt=1',
+            'Upgrade-Insecure-Requests': '1'
+        }
+        self.session.get(logout_url, headers=headers, proxies=self.proxy)
+        self.session.get(index_url, headers=headers, proxies=self.proxy)
+        self.session.get(login_url, headers=headers, proxies=self.proxy)
+
 
     def __init__(self, user, proxy={}):
         self.proxy = proxy
@@ -125,6 +142,10 @@ class Profile:
             elif 'Сертификата' in attr:
                 self.cert = value.b.string
                 self.data['cert'] = self.cert
+
+
+    def change_proxy(self, new_proxy={}):
+        self.proxy = new_proxy
 
 
     @check_login
@@ -176,9 +197,6 @@ class Profile:
         points = the_table.get_window_extent(plt.gcf()._cachedRenderer).get_points()
         points[0,:] -= 10; points[1,:] += 10
         nbbox = matplotlib.transforms.Bbox.from_extents(points/plt.gcf().dpi)
-        # the_table.auto_set_font_size(False)
-        # the_table.set_fontsize(10)
-        # the_table.scale(1.2, 1.2)
         plt.savefig(draw_path, bbox_inches=nbbox)
         return diary
         

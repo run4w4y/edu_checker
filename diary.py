@@ -171,10 +171,13 @@ class DiaryTerm:
     
     def get_subject(self, input_name):
         name = ''
+        count = 0
         for key in self.subjects.keys():
-            if input_name in key.lower():
+            if input_name.lower() in key.lower():
                 name = key
-                break
+                count += 1
+        if count > 1:
+            return None
         return self.subjects.get(name)
 
 
