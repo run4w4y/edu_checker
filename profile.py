@@ -163,7 +163,8 @@ class Profile:
         cols = ['Предмет', *[str(i) for i in range(1, diary.grades_count + 1)], 'Средний', 'Итоговый']
         cell_text = []
         cell_colours = []
-        for key, value in diary.subjects.items():
+        for key in sorted(diary.subjects.keys()):
+            value = diary.subjects[key]
             if 'ОБЖ' in key:
                 key = 'ОБЖ'
             key = key.split('(')[0]
@@ -204,7 +205,6 @@ class Profile:
         del fig
         del ax
         return diary
-        
 
 
     @check_login
