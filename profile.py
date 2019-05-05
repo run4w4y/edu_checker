@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+import matplotlib
 try:
     from url_helper import *
     from exceptions import *
@@ -131,9 +132,11 @@ class Profile:
         diary = DiaryTerm(self.session, term, self.proxy)
         if not draw:
             return diary
-        fig, ax = plt.subplots(figsize=(25.714*(0.3 + 0.02*diary.grades_count), 0.3375*len(diary.subjects.keys())))
+        fig, ax = plt.subplots(figsize=(20, 6))
+        fig.tight_layout()
         plt.axis('tight')
         plt.axis('off')
+        plt.grid('off')
         cols = ['Предмет', *[str(i) for i in range(1, diary.grades_count + 1)], 'Средний', 'Итоговый']
         cell_text = []
         cell_colours = []
@@ -166,13 +169,17 @@ class Profile:
             cellText=cell_text,
             cellColours=cell_colours,
             colLabels=cols,
-            colWidths=[0.15] + [0.02] * diary.grades_count + [0.075, 0.075],
-            loc='center right'
+            colWidths=[0.125] + [0.015] * diary.grades_count + [0.055, 0.055],
+            loc='center'
         )
-        the_table.auto_set_font_size(False)
-        the_table.set_fontsize(14)
-        the_table.scale(1.5, 1.5)
-        plt.savefig(draw_path)
+        plt.gcf().canvas.draw()
+        points = the_table.get_window_extent(plt.gcf()._cachedRenderer).get_points()
+        points[0,:] -= 10; points[1,:] += 10
+        nbbox = matplotlib.transforms.Bbox.from_extents(points/plt.gcf().dpi)
+        # the_table.auto_set_font_size(False)
+        # the_table.set_fontsize(10)
+        # the_table.scale(1.2, 1.2)
+        plt.savefig(draw_path, bbox_inches=nbbox)
         return diary
         
 
