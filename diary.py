@@ -169,7 +169,12 @@ class DiaryTerm:
             self.subjects[subject.name] = subject
 
     
-    def get_subject(self, name):
+    def get_subject(self, input_name):
+        name = ''
+        for key in self.subjects.keys():
+            if input_name in key.lower():
+                name = key
+                break
         return self.subjects.get(name)
 
 
