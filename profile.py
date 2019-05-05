@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
 try:
     from url_helper import *
     from exceptions import *
@@ -126,8 +127,54 @@ class Profile:
 
 
     @check_login
-    def diary_term(self, term=''):
-        return DiaryTerm(self.session, term, self.proxy)
+    def diary_term(self, term='', draw=False, draw_path='grades.png'):
+        diary = DiaryTerm(self.session, term, self.proxy)
+        if not draw:
+            return diary
+        fig, ax = plt.subplots(figsize=(25.714*(0.3 + 0.02*diary.grades_count), 0.3375*len(diary.subjects.keys())))
+        plt.axis('tight')
+        plt.axis('off')
+        cols = ['Предмет', *[str(i) for i in range(1, diary.grades_count + 1)], 'Средний', 'Итоговый']
+        cell_text = []
+        cell_colours = []
+        for key, value in diary.subjects.items():
+            if 'ОБЖ' in key:
+                key = 'ОБЖ'
+            key = key.split('(')[0]
+
+            grade_colors = {
+                5: (0.18, 0.8, 0.443),
+                4: (0.572, 0.956, 0.258),
+                3: (0.945, 0.768, 0.058),
+                2: (0.901, 0.494, 0.133),
+                1: (0.905, 0.298, 0.235)
+            }
+            color = [(0.925, 0.941, 0.945)]
+            grades = value.grades
+            color += [grade_colors.get(int(i)) for i in grades]
+            if len(grades) < diary.grades_count:
+                color += [(0.925, 0.941, 0.945)]*(diary.grades_count - len(grades))
+                grades += ['']*(diary.grades_count - len(grades))
+            
+            color.append(grade_colors.get(round(value.average_grade)) if grade_colors.get(round(value.average_grade)) is not None else (1, 1, 1))
+            final_grade = 0 if value.final_grade is None else value.final_grade
+            color.append(grade_colors.get(int(final_grade)) if grade_colors.get(int(final_grade)) is not None else (0.925, 0.941, 0.945))
+            cell_text.append([key, *grades, value.average_grade, final_grade])
+            cell_colours.append(color)
+        
+        the_table = plt.table(
+            cellText=cell_text,
+            cellColours=cell_colours,
+            colLabels=cols,
+            colWidths=[0.15] + [0.02] * diary.grades_count + [0.075, 0.075],
+            loc='center right'
+        )
+        the_table.auto_set_font_size(False)
+        the_table.set_fontsize(14)
+        the_table.scale(1.5, 1.5)
+        plt.savefig(draw_path)
+        return diary
+        
 
 
     @check_login

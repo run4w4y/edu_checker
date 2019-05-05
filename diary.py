@@ -158,13 +158,13 @@ class DiaryTerm:
         html = BeautifulSoup(response.text, 'html.parser')
         main_table = html.find('table', attrs={'class': 'term-marks'})
         rows = main_table.find_all('tr')
-        grades_count = int(rows[0].find_all('td')[1]['colspan'])
+        self.grades_count = int(rows[0].find_all('td')[1]['colspan'])
         self.subjects = {}
 
         for row in rows[1:-1]:
             cols = row.find_all('td')
             subject = TermSubject(
-                [col for col in cols], grades_count
+                [col for col in cols], self.grades_count
             )
             self.subjects[subject.name] = subject
 
@@ -183,5 +183,6 @@ class DiaryTerm:
     def __str__(self):
         return str(dict([
             ('term_number', self.term_number),
+            ('grades_count', self.grades_count),
             ('subjects', self.subjects)
         ]))
