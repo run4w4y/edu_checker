@@ -4,7 +4,7 @@ from datetime import datetime
 try:
     from url_helper import *
     from exceptions import *
-except ModuleNotFoundError:
+except ImportError:
     from edu_parser.url_helper import *
     from edu_parser.exceptions import *
 
