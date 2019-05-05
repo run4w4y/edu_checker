@@ -44,7 +44,7 @@ class DiarySubject:
         self.data['time'] = self.time
         
         self.name = data[1].string
-        self.data['time_start'] = self.time_start
+        self.data['name'] = self.name
 
         if data[2].p is not None:
             self.homework = data[2].p.string
