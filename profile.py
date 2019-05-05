@@ -143,6 +143,8 @@ class Profile:
                 self.cert = value.b.string
                 self.data['cert'] = self.cert
 
+        self.save_grades()
+
 
     def change_proxy(self, new_proxy={}):
         self.proxy = new_proxy
@@ -198,6 +200,9 @@ class Profile:
         points[0,:] -= 10; points[1,:] += 10
         nbbox = matplotlib.transforms.Bbox.from_extents(points/plt.gcf().dpi)
         plt.savefig(draw_path, bbox_inches=nbbox)
+        plt.clf()
+        del fig
+        del ax
         return diary
         
 
