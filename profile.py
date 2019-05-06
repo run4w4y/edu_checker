@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import matplotlib
+
 try:
     from url_helper import *
     from exceptions import *
@@ -79,7 +80,6 @@ class Profile:
         if 'Неверный логин или пароль' in response.text:
             raise CredentialsError('uncorrect credentials')
 
-    
     def logout(self):
         headers = {
             'Host': 'edu.tatar.ru',
@@ -96,7 +96,6 @@ class Profile:
         self.session.get(index_url, headers=headers, proxies=self.proxy)
         self.session.get(login_url, headers=headers, proxies=self.proxy)
 
-
     def __init__(self, user, proxy={}):
         self.proxy = proxy
         self.session = requests.session()
@@ -107,16 +106,16 @@ class Profile:
         if 'Войти через ЕСИА' in response.text:
             self.login()
             response = self.session.get(index_url, proxies=self.proxy)
-        
+
         html = BeautifulSoup(response.text, 'html.parser')
         raw_data = {}
         user_table = html.find('table', attrs={'class': 'tableEx'})
         rows = user_table.find_all('tr')
-        
+
         for row in rows:
             cols = row.findAll('td')
             raw_data[cols[0]] = cols[1]
-        
+
         self.data = {}
 
         for attr, value in raw_data.items():
@@ -145,10 +144,9 @@ class Profile:
 
         self.save_grades()
 
-
     def change_proxy(self, new_proxy={}):
+        self.logout()
         self.proxy = new_proxy
-
 
     @check_login
     def diary_term(self, term='', draw=False, draw_path='grades.png'):
@@ -180,15 +178,17 @@ class Profile:
             grades = value.grades
             color += [grade_colors.get(int(i)) for i in grades]
             if len(grades) < diary.grades_count:
-                color += [(0.925, 0.941, 0.945)]*(diary.grades_count - len(grades))
-                grades += ['']*(diary.grades_count - len(grades))
-            
-            color.append(grade_colors.get(round(value.average_grade)) if grade_colors.get(round(value.average_grade)) is not None else (1, 1, 1))
+                color += [(0.925, 0.941, 0.945)] * (diary.grades_count - len(grades))
+                grades += [''] * (diary.grades_count - len(grades))
+
+            color.append(grade_colors.get(round(value.average_grade)) if grade_colors.get(
+                round(value.average_grade)) is not None else (1, 1, 1))
             final_grade = 0 if value.final_grade is None else value.final_grade
-            color.append(grade_colors.get(int(final_grade)) if grade_colors.get(int(final_grade)) is not None else (0.925, 0.941, 0.945))
+            color.append(grade_colors.get(int(final_grade)) if grade_colors.get(int(final_grade)) is not None else (
+            0.925, 0.941, 0.945))
             cell_text.append([key, *grades, value.average_grade, final_grade])
             cell_colours.append(color)
-        
+
         the_table = plt.table(
             cellText=cell_text,
             cellColours=cell_colours,
@@ -198,19 +198,18 @@ class Profile:
         )
         plt.gcf().canvas.draw()
         points = the_table.get_window_extent(plt.gcf()._cachedRenderer).get_points()
-        points[0,:] -= 10; points[1,:] += 10
-        nbbox = matplotlib.transforms.Bbox.from_extents(points/plt.gcf().dpi)
+        points[0, :] -= 10;
+        points[1, :] += 10
+        nbbox = matplotlib.transforms.Bbox.from_extents(points / plt.gcf().dpi)
         plt.savefig(draw_path, bbox_inches=nbbox)
         plt.clf()
         del fig
         del ax
         return diary
 
-
     @check_login
     def diary_day(self, date=datetime.today().strftime('%d.%m.%Y')):
         return DiaryDay(self.session, date, self.proxy)
-
 
     def diary_week(self, delta=0):
         date_text = datetime.today().strftime('%d.%m.%Y')
@@ -218,13 +217,11 @@ class Profile:
         dates = [date + timedelta(days=i) for i in range(0 - date.weekday(), 7 - date.weekday())]
         return [self.diary_day(i.strftime('%d.%m.%Y'), ) for i in dates[:-1]]
 
-    
     def save_grades(self, diary=None):
         if diary is None:
             diary = self.diary_term()
         for name, subject in diary.subjects.items():
             self.grades_cache[name] = subject.grades
-
 
     def check_grades(self):
         diary = self.diary_term()
@@ -232,14 +229,12 @@ class Profile:
         for name, subject in diary.subjects.items():
             if len(subject.grades) > len(self.grades_cache[name]):
                 new_grades[name] = subject.grades[len(self.grades_cache[name]):]
-        
+
         self.save_grades(diary)
         return new_grades
 
-
     def __repr__(self):
         return 'instance of Profile class with login {}'.format(self.login)
-
 
     def __str__(self):
         return str(self.data)
