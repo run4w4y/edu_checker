@@ -198,7 +198,7 @@ class Profile:
         )
         plt.gcf().canvas.draw()
         points = the_table.get_window_extent(plt.gcf()._cachedRenderer).get_points()
-        points[0, :] -= 10;
+        points[0, :] -= 10
         points[1, :] += 10
         nbbox = matplotlib.transforms.Bbox.from_extents(points / plt.gcf().dpi)
         plt.savefig(draw_path, bbox_inches=nbbox)
