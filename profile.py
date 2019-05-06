@@ -1,9 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
-import matplotlib
-
 try:
     from url_helper import *
     from exceptions import *
@@ -150,6 +147,9 @@ class Profile:
 
     @check_login
     def diary_term(self, term='', draw=False, draw_path='grades.png'):
+        import matplotlib.pyplot as plt
+        import matplotlib
+
         diary = DiaryTerm(self.session, term, self.proxy)
         if not draw:
             return diary
@@ -205,6 +205,8 @@ class Profile:
         plt.clf()
         del fig
         del ax
+        del matplotlib
+        del plt
         return diary
 
     @check_login
