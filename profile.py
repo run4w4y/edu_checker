@@ -13,7 +13,7 @@ except ImportError:
 
 def check_login(f):
     def wrap(self, *args, **kwargs):
-        if self.credentials['main_login'] not in self.session.get(index_url, proxy=self.proxy).text:
+        if self.credentials['main_login'] not in self.session.get(index_url, proxies=self.proxy).text:
             self.logout()
             self.login()
         try:
