@@ -144,6 +144,7 @@ class Profile:
                 self.data['cert'] = self.cert
 
         self.save_grades()
+        self.logout()
 
     def change_proxy(self, new_proxy={}):
         self.logout()
